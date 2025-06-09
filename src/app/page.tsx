@@ -11,7 +11,6 @@ export default function Home() {
   const [clickedHalf, setClickedHalf] = useState<'maya' | 'miles' | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [userAudioLevel, setUserAudioLevel] = useState(0);
-  const [aiAudioLevel, setAiAudioLevel] = useState(0);
   const [conversationStarted, setConversationStarted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [conversationStartTime, setConversationStartTime] = useState<number | null>(null);
@@ -145,7 +144,8 @@ export default function Home() {
       streamRef.current = stream;
       
       // Create audio context and analyser for user audio
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const AudioContextConstructor = window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      audioContextRef.current = new AudioContextConstructor();
       analyserRef.current = audioContextRef.current.createAnalyser();
       
       const source = audioContextRef.current.createMediaStreamSource(stream);
@@ -236,14 +236,8 @@ export default function Home() {
 
 
 
-  // Simple AI audio level based on isSpeaking state
-  useEffect(() => {
-    if (conversation.isSpeaking) {
-      setAiAudioLevel(0.6); // Fixed level when AI is speaking
-    } else {
-      setAiAudioLevel(0);
-    }
-  }, [conversation.isSpeaking]);
+  // AI speaking state is handled directly through conversation.isSpeaking
+  // No need for separate audio level state since we use isSpeaking for animations
 
   // Timer effect to update elapsed time
   useEffect(() => {
@@ -272,7 +266,7 @@ export default function Home() {
         conversation.endSession();
       }
     };
-  }, []);
+  }, [conversationStarted, conversation]);
 
   return (
     <div className="min-h-screen flex flex-col" style={{backgroundColor: '#F5F5F5'}}>
@@ -571,7 +565,7 @@ export default function Home() {
       {/* Footer with terms and privacy policy */}
       <footer className="text-center py-6 px-6">
         <p className="text-gray-500 text-sm">
-          By using our services, you agree to Sesame's{' '}
+          By using our services, you agree to Sesame&apos;s{' '}
           <a 
             href="/terms" 
             className="text-gray-600 hover:text-gray-800 underline"
