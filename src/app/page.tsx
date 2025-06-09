@@ -115,7 +115,7 @@ export default function Home() {
       // Start conversation with signed URL
       const conversationId = await conversation.startSession({ 
         // signedUrl: data.signedUrl 
-        signedUrl: 'wss://api.elevenlabs.io/v1/convai/conversation?agent_id=qx9sWoq9YQs7ZyHZm1uO&conversation_signature=cvtkn_01jxb7d97re7dvdtmbddxp9aws' 
+        signedUrl: `${process.env.NEXT_PUBLIC_ELEVENLABS_SIGNED_URL}`
       });
       
       console.log('🎯 Conversation started with ID:', conversationId);
