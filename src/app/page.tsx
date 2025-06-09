@@ -11,6 +11,7 @@ export default function Home() {
   const [clickedHalf, setClickedHalf] = useState<'maya' | 'miles' | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [userAudioLevel, setUserAudioLevel] = useState(0);
+  const [aiAudioLevel, setAiAudioLevel] = useState(0);
   const [conversationStarted, setConversationStarted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [conversationStartTime, setConversationStartTime] = useState<number | null>(null);
@@ -50,9 +51,13 @@ export default function Home() {
     }
   });
 
-  // Log isSpeaking state changes
+  // Simple AI audio level based on isSpeaking state
   useEffect(() => {
-    console.log(`🤖 isSpeaking changed: ${conversation.isSpeaking}`);
+    if (conversation.isSpeaking) {
+      setAiAudioLevel(0.6); // Fixed level when AI is speaking
+    } else {
+      setAiAudioLevel(0);
+    }
   }, [conversation.isSpeaking]);
 
   /**
@@ -119,6 +124,7 @@ export default function Home() {
       });
       
       console.log('🎯 Conversation started with ID:', conversationId);
+      console.log(aiAudioLevel)
       
     } catch (error) {
       console.error('❌ Error starting conversation:', error);
@@ -266,7 +272,7 @@ export default function Home() {
         conversation.endSession();
       }
     };
-  }, [conversationStarted, conversation]);
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col" style={{backgroundColor: '#F5F5F5'}}>
